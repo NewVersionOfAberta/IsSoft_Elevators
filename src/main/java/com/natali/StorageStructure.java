@@ -3,7 +3,7 @@ package com.natali;
 import lombok.Value;
 
 @Value
-class StorageStructure{
+class StorageStructure {
     int floor;
     Direction direction;
 }

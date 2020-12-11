@@ -150,7 +150,7 @@ public class Elevator implements Runnable {
             if (comparators.get(askedDirection).compare(newTargetFloor, targetFloor) > 0) {
                 floorSet.add(targetFloor);
                 targetFloor = newTargetFloor;
-            } else if (newTargetFloor != targetFloor){
+            } else if (newTargetFloor != targetFloor) {
                 floorSet.add(newTargetFloor);
             }
         }

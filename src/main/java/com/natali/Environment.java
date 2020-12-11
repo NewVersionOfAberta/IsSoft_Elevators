@@ -30,7 +30,7 @@ public class Environment {
 
     public Environment(int timeInterval, int max_floor, int min_floor, int elevatorsNumber,
                        int timeToOpenTheDoor, int timeToCloseTheDoor, int timeToPassAFloor, int bearingCapacity) {
-        checkArgument(max_floor > min_floor);
+        checkArgument(max_floor > min_floor, "");
         checkArgument(timeInterval > 0);
         checkArgument(timeToOpenTheDoor >= 0);
         checkArgument(timeToCloseTheDoor >= 0);
@@ -66,6 +66,8 @@ public class Environment {
         ConcurrentLinkedQueue<Person> queue = Direction.Down == direction ? floorQueueDown.get(floor) : floorQueueUp.get(floor);
         queue.add(person);
         log.info("A person appeared on the {} floor (target floor: {})", floor, targetFloor);
+
+        //if there are more than 1 people generators then add synchronization
         if (queue.size() == 1) {
             controller.addClientParallel(direction, floor);
         }

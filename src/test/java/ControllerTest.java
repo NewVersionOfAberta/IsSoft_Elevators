@@ -16,13 +16,13 @@ class ControllerTest {
     private static final int ANY_TIME_TO_PASS_A_FLOOR = 2000;
     private static final int BEARING_CAPACITY = 600;
 
-    private Elevator makeAnyElevatorOnTargetFloor(int id, int targetFloor){
+    private Elevator makeAnyElevatorOnTargetFloor(int id, int targetFloor) {
         return new Elevator(ANY_TIME_TO_OPEN_THE_DOOR,
                 ANY_TIME_TO_OPEN_THE_DOOR,
                 ANY_TIME_TO_PASS_A_FLOOR,
                 MAX_FLOOR, MIN_FLOOR,
-                id, (w, f, direction)-> new ArrayList<>(),
-                (i)->null, targetFloor, BEARING_CAPACITY);
+                id, (w, f, direction) -> new ArrayList<>(),
+                (i) -> null, targetFloor, BEARING_CAPACITY);
     }
 
     @Test
@@ -77,7 +77,7 @@ class ControllerTest {
         assertEquals(secondExpectedId, secondActualId);
     }
 
-    private void moveElevatorDown(Controller controller, int currentFloor){
+    private void moveElevatorDown(Controller controller, int currentFloor) {
         controller.addClient(Direction.Down, currentFloor);
     }
 

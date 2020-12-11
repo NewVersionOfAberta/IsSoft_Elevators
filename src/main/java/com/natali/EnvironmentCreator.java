@@ -23,8 +23,7 @@ public class EnvironmentCreator {
     private static final int BEARING_CAPACITY = 400;
 
 
-
-    public Environment createFromFile(String propertiesFile){
+    public Environment createFromFile(String propertiesFile) {
         InputStream inputStream = null;
         int spawnTime, maxFloor, minFloor, elevatorNumber, timeToOpen, timeToClose, timeToPass, bearingCapacity;
         try {
@@ -62,7 +61,7 @@ public class EnvironmentCreator {
                 elevatorNumber, timeToOpen, timeToClose, timeToPass, bearingCapacity);
     }
 
-    public Environment createDefault(){
+    public Environment createDefault() {
         return new Environment(SPAWN_INTERVAL, MAX_FLOOR, MIN_FLOOR, ELEVATORS_NUMBER,
                 TIME_TO_OPEN_THE_DOOR, TIME_TO_CLOSE_THE_DOOR, TIME_TO_PASS_THE_FLOOR, BEARING_CAPACITY);
     }

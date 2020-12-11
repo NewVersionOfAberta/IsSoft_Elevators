@@ -42,30 +42,30 @@ public class StatisticsWriter implements Runnable {
         this.elevatorsNumber = elevatorsNumber;
         isRunning = true;
         dataProcessorsMap = new ConcurrentHashMap<>();
-        for (int i = 1; i <= elevatorsNumber; i++){
+        for (int i = 1; i <= elevatorsNumber; i++) {
             dataProcessorsMap.put(i, new StatisticProcessor(minFloor, maxFloor));
         }
     }
 
-    public StatisticProcessor getDataProcessor(int id){
+    public StatisticProcessor getDataProcessor(int id) {
         return dataProcessorsMap.get(id);
     }
 
-    private String getStringPeriod(long period){
+    private String getStringPeriod(long period) {
         long hours = period / MILLISECONDS_IN_HOUR;
         period -= hours * MILLISECONDS_IN_HOUR;
         long minutes = period / MILLISECONDS_IN_MINUTE;
         period -= minutes * MILLISECONDS_IN_MINUTE;
-        long seconds = period /  MILLISECONDS_IN_SECOND;
+        long seconds = period / MILLISECONDS_IN_SECOND;
         period -= seconds * MILLISECONDS_IN_SECOND;
         return String.format("%d ч %d мин %d с %d мс", hours, minutes, seconds, period);
     }
 
-    private int getMostPopularFloor(int[] floors){
+    private int getMostPopularFloor(int[] floors) {
         int max = -1;
         int floorNumber = 0;
-        for (int i = 0; i < floors.length; i++){
-            if (floors[i] > max){
+        for (int i = 0; i < floors.length; i++) {
+            if (floors[i] > max) {
                 max = floors[i];
                 floorNumber = i;
             }
@@ -73,7 +73,7 @@ public class StatisticsWriter implements Runnable {
         return floorNumber;
     }
 
-    private void writeStatistics(int timestamp){
+    private void writeStatistics(int timestamp) {
         FileWriter fileWriter;
         log.info("Writing statistics");
         try {
@@ -90,13 +90,13 @@ public class StatisticsWriter implements Runnable {
         int[] startFloors, targetFloors;
         PrintWriter printWriter = new PrintWriter(fileWriter);
         printWriter.printf(BOARD, timestamp);
-        for (int i = 1; i <=  elevatorsNumber; i++){
+        for (int i = 1; i <= elevatorsNumber; i++) {
             dataProcessor = dataProcessorsMap.get(i);
             synchronized (dataProcessor) {
                 totalTime = dataProcessor.getTotalTime();
                 totalTimeInElevator = getStringPeriod(totalTime);
                 totalPassengers = dataProcessor.getAmountOfPassengers();
-                if (totalPassengers == 0){
+                if (totalPassengers == 0) {
                     totalPassengers = 1;
                 }
                 totalWeight = dataProcessor.getTotalWeight();
@@ -105,7 +105,7 @@ public class StatisticsWriter implements Runnable {
             }
 
             printWriter.printf(STATISTICS_PATTERN,
-                    i,  dataProcessor.getTotalFloorsPassed(), dataProcessor.getAmountOfPassengers(),
+                    i, dataProcessor.getTotalFloorsPassed(), dataProcessor.getAmountOfPassengers(),
                     totalTimeInElevator, totalTime / totalPassengers,
                     totalWeight, totalWeight / totalPassengers,
                     getMostPopularFloor(startFloors) + MIN_FLOOR, getMostPopularFloor(targetFloors) + MIN_FLOOR);
@@ -131,7 +131,7 @@ public class StatisticsWriter implements Runnable {
             return;
         }
         int timestamp = 0;
-        while (isRunning){
+        while (isRunning) {
             try {
                 Thread.sleep(TIME_TO_NEXT_STATISTICS_WRIGHT);
             } catch (InterruptedException e) {
