@@ -2,13 +2,10 @@ package com.natali;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -16,17 +13,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Slf4j
 public class Environment {
 
-    private static final int TIME_TO_WAIT_AFTER_ELEVATOR_LEAVE = 100;
+    private static final int TIME_TO_WAIT_AFTER_ELEVATOR_LEAVE = 150;
 
     private final int MAX_FLOOR;
     private final int MIN_FLOOR;
     private final Controller controller;
     private final StatisticsWriter statisticsWriter;
 
-    private final Queue<Person> waitingQueue;
+    private final ThreadPoolExecutor waitingPool;
 
-    private final ConcurrentMap<Integer, ConcurrentLinkedQueue<Person>> floorQueueUp;
-    private final ConcurrentMap<Integer, ConcurrentLinkedQueue<Person>> floorQueueDown;
+    private final Map<Integer, ConcurrentLinkedQueue<Person>> floorQueueUp;
+    private final Map<Integer, ConcurrentLinkedQueue<Person>> floorQueueDown;
 
 
     private volatile boolean isRunning;
@@ -47,17 +44,16 @@ public class Environment {
 
         statisticsWriter = new
                 StatisticsWriter(MIN_FLOOR, MAX_FLOOR, "statistics.txt", elevatorsNumber);
-        waitingQueue = new LinkedBlockingDeque<>();
+        waitingPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
-        floorQueueUp = new ConcurrentHashMap<>();
-        floorQueueDown = new ConcurrentHashMap<>();
+        floorQueueUp = new HashMap<>();
+        floorQueueDown = new HashMap<>();
         initializeFloorMaps();
         controller = createController(elevatorsNumber,
                 timeToOpenTheDoor, timeToCloseTheDoor, timeToPassAFloor, bearingCapacity);
         PeopleGenerator peopleGenerator = new PeopleGenerator(timeInterval, MAX_FLOOR, MIN_FLOOR, this::addPerson);
 
         new Thread(peopleGenerator).start();
-        new Thread(this::processWaitingQueue).start();
         new Thread(statisticsWriter).start();
 
     }
@@ -84,20 +80,13 @@ public class Environment {
     }
 
 
-    public void processWaitingQueue() {
-        while (isRunning) {
-            while (!waitingQueue.isEmpty()) {
-                log.info("Processing waiting queue");
-                Person oldPerson = waitingQueue.poll();
-                checkNotNull(oldPerson);
-                controller.addClientParallel(oldPerson.getDirection(), oldPerson.getStartFloor());
-            }
-            try {
-                Thread.sleep(TIME_TO_WAIT_AFTER_ELEVATOR_LEAVE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void DelayedCall(Direction direction, int floor) {
+        try {
+            Thread.sleep(TIME_TO_WAIT_AFTER_ELEVATOR_LEAVE);
+        } catch (InterruptedException e) {
+            log.error("Thread was interrupted", e);
         }
+        controller.addClientParallel(direction, floor);
     }
 
 
@@ -114,9 +103,9 @@ public class Environment {
                 totalWeight += person.getWeight();
                 resultPersonsList.add(person);
             }
-        }
-        if (!queue.isEmpty()) {
-            waitingQueue.add(queue.peek());
+            if (!queue.isEmpty()) {
+                waitingPool.submit(() -> DelayedCall(direction, floor));
+            }
         }
         return resultPersonsList;
     }

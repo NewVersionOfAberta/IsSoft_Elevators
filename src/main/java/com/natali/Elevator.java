@@ -144,29 +144,29 @@ public class Elevator implements Runnable {
         }
     }
 
-    private int updateTargetFloorValue(int nextFloor) {
+    private int updateTargetFloorValue(int targetFloor) {
         if (!floorSet.isEmpty()) {
-            int newNext = nextFloorSupplier.get(askedDirection).get();
-            if (comparators.get(askedDirection).compare(newNext, nextFloor) > 0) {
-                floorSet.add(nextFloor);
-                nextFloor = newNext;
-            } else {
-                floorSet.add(newNext);
+            int newTargetFloor = nextFloorSupplier.get(askedDirection).get();
+            if (comparators.get(askedDirection).compare(newTargetFloor, targetFloor) > 0) {
+                floorSet.add(targetFloor);
+                targetFloor = newTargetFloor;
+            } else if (newTargetFloor != targetFloor){
+                floorSet.add(newTargetFloor);
             }
         }
-        return nextFloor;
+        return targetFloor;
     }
 
     private void move() {
         int targetFloor = nextFloorSupplier.get(askedDirection).get();
         while (true) {
             synchronized (this) {
+                actualDirection = targetFloor > currentFloor.get() ? Direction.Up : Direction.Down;
                 targetFloor = updateTargetFloorValue(targetFloor);
                 if (targetFloor == currentFloor.get()) {
                     break;
                 }
                 currentFloor.addAndGet(actualDirection == Direction.Up ? 1 : -1);
-                actualDirection = targetFloor > currentFloor.get() ? Direction.Up : Direction.Down;
             }
             waiting(timeOneFloorPath);
         }
