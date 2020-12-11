@@ -1,3 +1,6 @@
+import com.natali.Controller;
+import com.natali.Direction;
+import com.natali.Elevator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +16,15 @@ class ControllerTest {
     private static final int ANY_TIME_TO_PASS_A_FLOOR = 2000;
     private static final int BEARING_CAPACITY = 600;
 
+    private Elevator makeAnyElevatorOnTargetFloor(int id, int targetFloor){
+        return new Elevator(ANY_TIME_TO_OPEN_THE_DOOR,
+                ANY_TIME_TO_OPEN_THE_DOOR,
+                ANY_TIME_TO_PASS_A_FLOOR,
+                MAX_FLOOR, MIN_FLOOR,
+                id, (w, f, direction)-> new ArrayList<>(),
+                (i)->null, targetFloor, BEARING_CAPACITY);
+    }
+
     @Test
     void addClient_2elevators4and6floorsPersonAt5_elevatorAt6Move() {
         //init
@@ -23,14 +35,12 @@ class ControllerTest {
         int floor4 = 4;
         int floor6 = 6;
         Direction anyDirection = Direction.Up;
-        //Environment environment = new Environment(0, MAX_FLOOR, MIN_FLOOR, 2);
-        Elevator elevator4floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, 1, null, floor4, BEARING_CAPACITY);
-        Elevator elevator6floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, expectedId, null, floor6, BEARING_CAPACITY);
+
+        Elevator elevator4floor = makeAnyElevatorOnTargetFloor(1, floor4);
+        Elevator elevator6floor = makeAnyElevatorOnTargetFloor(expectedId, floor6);
 
         List<Elevator> elevators = new ArrayList<>(List.of(elevator4floor, elevator6floor));
-        Controller controller = new Controller(elevators);
+        Controller controller = new Controller(elevators, false);
 
         //
         actualId = controller.addClient(anyDirection, startFloor);
@@ -39,8 +49,8 @@ class ControllerTest {
     }
 
     @Test
-    @DisplayName("Elevators A and B on the 4 and 6 floors. Persons P1 and P2 on the 1 and 9 floors;" +
-            "A takes P1 and B takes P2")
+    @DisplayName("Elevators 1E and 2E on the 4 and 6 floors. Persons P1 and P2 on the 1 and 9 floors;" +
+            "1E takes P1 and 2E takes P2")
     void addClient_2personsOn1and9floors2elevatorsOn4and6_elevatorOn4takes1stOn6take2nd() {
         int firstExpectedId = 1;
         int firstActualId;
@@ -53,14 +63,11 @@ class ControllerTest {
 
         int floor4 = 4;
         int floor6 = 6;
-       // Environment environment = new Environment(0, MAX_FLOOR, MIN_FLOOR, 2);
-        Elevator elevator4floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, firstExpectedId, null, floor4, BEARING_CAPACITY);
-        Elevator elevator6floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, secondExpectedId, null, floor6, BEARING_CAPACITY);
+        Elevator elevator4floor = makeAnyElevatorOnTargetFloor(firstExpectedId, floor4);
+        Elevator elevator6floor = makeAnyElevatorOnTargetFloor(secondExpectedId, floor6);
 
         List<Elevator> elevators = new ArrayList<>(List.of(elevator4floor, elevator6floor));
-        Controller controller = new Controller(elevators);
+        Controller controller = new Controller(elevators, false);
 
         //
         firstActualId = controller.addClient(anyDirection, firstStartFloor);
@@ -86,14 +93,11 @@ class ControllerTest {
         int floor3 = 3;
         int floor8 = 8;
 
-        //Environment environment = new Environment(0, MAX_FLOOR, MIN_FLOOR, 2);
-        Elevator elevator3floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, 1, null, floor3, BEARING_CAPACITY);
-        Elevator elevator8floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, expectedId, null, floor8, BEARING_CAPACITY);
+        Elevator elevator3floor = makeAnyElevatorOnTargetFloor(1, floor3);
+        Elevator elevator8floor = makeAnyElevatorOnTargetFloor(expectedId, floor8);
 
         List<Elevator> elevators = new ArrayList<>(List.of(elevator3floor, elevator8floor));
-        Controller controller = new Controller(elevators);
+        Controller controller = new Controller(elevators, false);
 
         moveElevatorDown(controller, floor3);
         assertEquals(Direction.Down, elevator3floor.getActualDirection());
@@ -110,22 +114,19 @@ class ControllerTest {
         int actualId1;
         int actualId2;
 
+        int firstId = 1;
+        int secondId = 2;
+
         int startFloor = 4;
         Direction direction1 = Direction.Up;
         Direction direction2 = Direction.Down;
         int floor1 = 1;
-        //Environment environment = new Environment(0, MAX_FLOOR, MIN_FLOOR, 2);
-        Elevator elevator3floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, 1, null, floor1, BEARING_CAPACITY);
-        Elevator elevator8floor = new Elevator(ANY_TIME_TO_OPEN_THE_DOOR, ANY_TIME_TO_PASS_A_FLOOR,
-                MAX_FLOOR, MIN_FLOOR, 2, null, floor1, BEARING_CAPACITY);
+        Elevator elevator3floor = makeAnyElevatorOnTargetFloor(firstId, floor1);
+        Elevator elevator8floor = makeAnyElevatorOnTargetFloor(secondId, floor1);
 
         List<Elevator> elevators = new ArrayList<>(List.of(elevator3floor, elevator8floor));
-        Controller controller = new Controller(elevators);
-//        Person person1 = new Person(DEFAULT_WEIGHT, upFloor, startFloor, Direction.Up);
-//        Person person2 = new Person(DEFAULT_WEIGHT, downFloor, startFloor, Direction.Down);
+        Controller controller = new Controller(elevators, false);
 
-        //
         actualId1 = controller.addClient(direction1, startFloor);
         actualId2 = controller.addClient(direction2, startFloor);
         //
