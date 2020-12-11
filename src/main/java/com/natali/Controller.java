@@ -71,12 +71,6 @@ public class Controller {
     }
 
 
-    //если лифт перегружен
-    //если лифт не стоит и при этом:
-    //если лифт едет к пользователю, а направление запроса не совпадает
-    //если лифт едет по запросам и направление не совпадает
-    //или если едет по запросам пользователей в нужном направлении, однако находится слишком высоко/низко
-
     private boolean isElevatorSuitable(Elevator elevator, Direction direction, int startFloor) {
         boolean isTargetLower;
         boolean isDirectedByClients;
