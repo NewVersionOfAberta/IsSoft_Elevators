@@ -55,7 +55,7 @@ public class StatisticsWriter implements Runnable {
         long minutes = period / MILLISECONDS_IN_MINUTE;
         period -= minutes * MILLISECONDS_IN_MINUTE;
         long seconds = period /  MILLISECONDS_IN_SECOND;
-        period -= seconds / MILLISECONDS_IN_SECOND;
+        period -= seconds * MILLISECONDS_IN_SECOND;
         return String.format("%d ч %d мин %d с %d мс", hours, minutes, seconds, period);
     }
 

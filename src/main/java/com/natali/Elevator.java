@@ -37,8 +37,7 @@ public class Elevator implements Runnable {
     @Getter
     private final int id;
     private final int maxWeight;
-    //ToDo: think about a not concurrent set, why atomic int?
-    /**/
+    /* Communication */
     private final IPeopleSupplier peopleSupplier;
     private final Function<Integer, StatisticProcessor> statisticProcessorFunction;
     private INotifier notifier;
@@ -51,6 +50,7 @@ public class Elevator implements Runnable {
     private final HashMap<Direction, Supplier<Integer>> nextFloorSupplier;
     private final List<Person> passengers;
     private final ConcurrentSkipListSet<Integer> floorSet;
+
     /*States*/
 
     private final AtomicInteger currentFloor;
