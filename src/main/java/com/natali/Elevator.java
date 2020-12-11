@@ -1,7 +1,7 @@
 package com.natali;
 
-import com.natali.command_interfaces.INotifier;
-import com.natali.command_interfaces.IPeopleSupplier;
+import com.natali.command_interfaces.Notifier;
+import com.natali.command_interfaces.PeopleSupplier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +38,9 @@ public class Elevator implements Runnable {
     private final int id;
     private final int maxWeight;
     /* Communication */
-    private final IPeopleSupplier peopleSupplier;
+    private final PeopleSupplier peopleSupplier;
     private final Function<Integer, StatisticProcessor> statisticProcessorFunction;
-    private INotifier notifier;
+    private Notifier notifier;
     private final Condition hasClient;
     private final ReentrantLock lock;
 
@@ -66,7 +66,7 @@ public class Elevator implements Runnable {
     private boolean isOverweight;
 
     public Elevator(int timeToOpenTheDoor, int timeToCloseTheDoor, int timeOneFloorPath, int maxFloor, int minFloor,
-                    int id, IPeopleSupplier peopleSupplier, Function<Integer, StatisticProcessor> statisticProcessorFunction,
+                    int id, PeopleSupplier peopleSupplier, Function<Integer, StatisticProcessor> statisticProcessorFunction,
                     int currentFloor, int maxWeight) {
         checkArgument(currentFloor >= minFloor, WRONG_FLOOR_NUMBER, minFloor, maxFloor);
         checkArgument(currentFloor <= maxFloor, WRONG_FLOOR_NUMBER, minFloor, maxFloor);
@@ -260,7 +260,7 @@ public class Elevator implements Runnable {
 
     }
 
-    public void setNotifier(INotifier notifier) {
+    public void setNotifier(Notifier notifier) {
         checkNotNull(notifier);
         this.notifier = notifier;
     }

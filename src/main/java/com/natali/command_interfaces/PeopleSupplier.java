@@ -5,6 +5,6 @@ import com.natali.Person;
 
 import java.util.List;
 
-public interface IPeopleSupplier {
+public interface PeopleSupplier {
     List<Person> get(int weight, int floor, Direction direction);
 }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.StrictMath.abs;
 
 public class StatisticProcessor {
@@ -30,6 +31,7 @@ public class StatisticProcessor {
     Map<Person, StatisticsPerson> personStatisticsTemp;
 
     public StatisticProcessor(int minFloor, int maxFloor) {
+        checkArgument(maxFloor > minFloor, "");
         MIN_FLOOR = minFloor;
 
         personStatisticsTemp = new HashMap<>();

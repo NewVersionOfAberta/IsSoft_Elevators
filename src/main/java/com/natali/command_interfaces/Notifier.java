@@ -1,5 +1,5 @@
 package com.natali.command_interfaces;
 
-public interface INotifier {
+public interface Notifier {
     void notifyEmpty();
 }

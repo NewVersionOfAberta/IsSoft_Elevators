@@ -13,6 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Slf4j
 public class StatisticsWriter implements Runnable {
+    private static final String WRONG_FLOOR_NUMBER = "Floor number must be in range from %i to %i";
     private static final int TIME_TO_NEXT_STATISTICS_WRIGHT = 5000;
     private static final int MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
     private static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
@@ -33,15 +34,16 @@ public class StatisticsWriter implements Runnable {
     private volatile boolean isRunning;
 
     public StatisticsWriter(int minFloor, int maxFloor, String file_name, int elevatorsNumber) {
+        checkArgument(maxFloor > minFloor, "");
         MIN_FLOOR = minFloor;
+        checkNotNull(file_name, "File name must not be null");
+        checkArgument(!file_name.isEmpty(), WRONG_FLOOR_NUMBER, minFloor, maxFloor);
         FILE_NAME = file_name;
         this.elevatorsNumber = elevatorsNumber;
-        checkNotNull(file_name);
-        checkArgument(!file_name.isEmpty(), "No file name for statistics file");
         isRunning = true;
         dataProcessorsMap = new ConcurrentHashMap<>();
         for (int i = 1; i <= elevatorsNumber; i++){
-            dataProcessorsMap.put(i, new StatisticProcessor(MIN_FLOOR, maxFloor));
+            dataProcessorsMap.put(i, new StatisticProcessor(minFloor, maxFloor));
         }
     }
 
